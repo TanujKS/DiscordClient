@@ -43,7 +43,7 @@ class LoggedMessage(discord.Embed):
     @classmethod
     def edited_message(cls, before, after):
         cls = cls(before, type="Message edited", color=Color.orange())
-        cls.add_field(name="New Message:", value=after.content[0:1000], inline=False)
+        cls.add_field(name="New Message:", value="None" if not after.content else after.content[0:1000], inline=False)
 
         try:
             cls.add_field(name="Edited at:", value=utils.UTCtoPST(after.edited_at), inline=False)
@@ -216,6 +216,6 @@ class Logger(commands.Cog):
         embed = discord.Embed(title="Deleted and edited messages are being sent too:", description=channel, color=Color.red())
         await ctx.reply(embed=embed)
 
-        
+
 def setup(bot):
     bot.add_cog(Logger(bot))

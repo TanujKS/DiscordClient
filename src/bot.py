@@ -14,6 +14,7 @@ class Bot(commands.Bot):
     def __init__(bot, **kwargs):
         super().__init__(**kwargs)
         bot.debug = kwargs.get("debug", False)
+
         try:
             bot.config = Config.from_file()
         except FileNotFoundError:
@@ -64,6 +65,11 @@ class Bot(commands.Bot):
             return None
 
 
+    def remove_all_cogs(bot):
+        for cog in bot.cogs:
+            bot.remove_cog(cog)
+
+
     async def on_ready(bot):
         print("Logged into", bot.user)
         for cog in bot.cogs:
@@ -84,7 +90,6 @@ class Bot(commands.Bot):
         embed.add_field(name="React 📝 to enable Logger", value="\u200b", inline=False)
         embed.add_field(name="React ⚙️ to enable commands", value="\u200b", inline=False)
         embed.add_field(name="React ✅ to confirm", value="\u200b", inline=False)
-
         message = await ctx.reply(embed=embed)
         for key, value in cogs.items():
             await message.add_reaction(key)
@@ -94,20 +99,15 @@ class Bot(commands.Bot):
 
         reaction, user = await bot.wait_for('reaction_add', timeout=120.0, check=check)
 
-        selected_cogs = [str(reaction) for reaction in reaction.message.reactions]
-        selected_cogs.remove("✅")
+        selected_cogs = [str(reaction) for reaction in reaction.message.reactions if str(reaction) != "✅"]
         selected_cogs = [cogs[cog] for cog in selected_cogs]
         selected_cogs.append("ErrorHandler")
-
         bot.config.cogs = selected_cogs
 
-        loaded_cogs = [cog for cog in bot.cogs]
-        for cog in loaded_cogs:
-            bot.remove_cog(cog)
+        bot.remove_all_cogs()
 
         for cog in selected_cogs:
             bot.add_cog(globals()[cog](bot))
-
 
         await message.clear_reactions()
         embed = discord.Embed(title="Your Self-Bot is setup! You can always use the setup command to edit which features you would like enabled", description="Remember, if you have not set a logging channel yet, please use the .setlogchannel command to enable Logger", color=Color.red())
