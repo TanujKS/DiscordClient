@@ -1,5 +1,9 @@
 discord
 googletrans==3.1.0a0
 PyDictionary
+<<<<<<< HEAD
 pyspellchecker
 python-dateutil
+=======
+pyinstaller
+>>>>>>> master

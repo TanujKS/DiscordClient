@@ -1,14 +1,12 @@
 import discord
 from discord.ext import commands
+from discord.utils import get
 
 import src.utils as utils
-from src.utils import Color, Converters
+from src.utils import Color
 
 from PyDictionary import PyDictionary
 PyDictionary = PyDictionary()
-
-from spellchecker import SpellChecker
-SpellChecker = SpellChecker()
 
 from googletrans import Translator
 from googletrans.constants import LANGUAGES
@@ -16,6 +14,8 @@ Translator = Translator()
 
 import datetime
 from datetime import datetime as dtime
+
+import ast
 
 
 class Misc(commands.Cog):
@@ -25,50 +25,7 @@ class Misc(commands.Cog):
         self.bot.help_command.cog = self
 
 
-    @commands.command(aliases=['ac'], brief="Autocorrects a set number of messages, default is 5", help="Autocorrects a set number of messages, default is 5")
-    async def autocorrect(self, ctx):
-        if not ctx.message.reference:
-            raise commands.BadArgument("You must reply to a message to autocorrect")
-
-        old_message = await self.bot.get_message_reference(ctx.message.reference, ctx.channel)
-
-        if old_message.author != ctx.author:
-            raise commands.BadArgument("You can only autocorrect your own messages")
-
-        corrected_message = SpellChecker.correction(old_message.content)
-        await old_message.edit(content=corrected_message)
-
-
-    @commands.command(brief="Stops the autocorrect form correcting a word", help="Stops the autocorrect from correcting a word")
-    async def ignoreword(self, ctx, word):
-      self.bot.config.ignored_words.append(word)
-      self.bot.config.ignored_words = self.bot.config.ignored_words
-      embed = discord.Embed(title=f"Autocorrect will now ignore the word {word}", color=Color.red())
-      await ctx.reply(embed=embed)
-
-
-    @commands.command(brief="Autocorrect will no longer ignore a word", help="Autocorrect will no longer ignore a word")
-    async def unignoreword(self, ctx, word):
-      try:
-          self.bot.config.ignored_words.remove(word)
-      except ValueError:
-          pass
-      self.bot.config.ignored_words = self.bot.config.ignored_words
-      embed = discord.Embed(title=f"Autocorrect will no longer ingore the word {word}", color=Color.red())
-      await ctx.reply(embed=embed)
-
-
-    @commands.command(brief="Shows all words that are ignored by autocorrect", help="Shows all words that are ignored by autocorrect")
-    async def ignoredwords(self, ctx):
-        message = "```Words ignored by autocorrect: \n"
-        for word in self.bot.config.ignored_words:
-            message += word
-            message += "\n"
-        message += "```"
-        await ctx.reply(message)
-
-
-    @commands.command(brief="Spams a message", help="Spams a message")
+    @commands.command(help="Spams a message")
     async def spam(self, ctx, *, message):
         embed = discord.Embed(title=f"To stop spamming, use {self.bot.command_prefix(self.bot, ctx)}stopspam")
         await ctx.reply(embed=embed)
@@ -79,7 +36,7 @@ class Misc(commands.Cog):
             await asyncio.sleep(1)
 
 
-    @commands.command(brief="Stops spamming a message", help="Stops spamming a message")
+    @commands.command(help="Stops spamming a message")
     async def stopspam(self, ctx):
     	self.spamming = False
 
@@ -97,9 +54,9 @@ class Misc(commands.Cog):
             member_or_role = ctx.author
         else:
             try:
-                member_or_role = await Converters.RoleConverter.convert(ctx, member_or_role)
+                member_or_role = await commands.RoleConverter().convert(ctx, member_or_role)
             except commands.RoleNotFound:
-                member_or_role = await Converters.MemberConverter.convert(ctx, member_or_role)
+                member_or_role = await commands.MemberConverter().convert(ctx, member_or_role)
 
 
         embed = discord.Embed(title=f"Perms for {str(member_or_role)} in {ctx.guild.name}", color=Color.red())
@@ -122,7 +79,7 @@ class Misc(commands.Cog):
         await ctx.reply(user.avatar_url)
 
 
-    @commands.command(aliases=['purge'], brief="Clears a number of messages", help="Clears a number of messages")
+    @commands.command(aliases=['purge'], help="Clears a number of messages")
     async def clear(self, ctx, num, *member: discord.User):
     	def is_member(m):
     		return m.author == member
@@ -178,7 +135,7 @@ class Misc(commands.Cog):
         await t.edit(content=f'Pong! `{(t.created_at-ctx.message.created_at).total_seconds() * 1000}ms`')
 
 
-    @commands.command(brief="Returns the definition of a word", help="Returns the definition of a word")
+    @commands.command(help="Returns the definition of a word")
     async def define(self, ctx, word):
         embed = discord.Embed(title=f"Definition of '{word}'", color=Color.green())
         meanings = PyDictionary.meaning(word)
@@ -187,7 +144,7 @@ class Misc(commands.Cog):
         await ctx.reply(embed=embed)
 
 
-    @commands.command(brief="Unpins all messages in a channel", help="Unpins all messages in a channel")
+    @commands.command(help="Unpins all messages in a channel")
     async def unpinall(self, ctx):
         await ctx.send(f"Are you sure you want me too unpin {len(await ctx.channel.pins())} messages? (y/n)")
         def check(m):
@@ -202,7 +159,7 @@ class Misc(commands.Cog):
             await ctx.send("Cancelled")
 
 
-    @commands.command(brief="Uses Google Translate to translate a message into English", help="Uses Google Translate to translate a message into English")
+    @commands.command(help="Uses Google Translate to translate a message into English")
     async def translate(self, ctx, *, message):
         translation = Translator.translate(message, dest='en')
         embed = discord.Embed(color=Color.green())
@@ -211,16 +168,64 @@ class Misc(commands.Cog):
         await ctx.send(embed=embed)
 
 
-    @commands.command(brief="Marks a server as read", help="Marks a server as read", aliases=['markasread', 'mar'])
+    @commands.command(help="Marks a server as read", aliases=['markasread', 'mar'])
     async def ack(self, ctx):
         await ctx.guild.ack()
 
 
-    @commands.command(brief="Changes the Self-Bot's prefix", help="Changes the Self-Bot's prefix")
+    @commands.command(help="Changes the Self-Bot's prefix")
     async def changeprefix(self, ctx, prefix):
         self.bot.config.prefix = prefix
         embed = discord.Embed(title=f"Your Self-Bot will now use the prefix {prefix}", description="You can still use .help incase you forget your prefix", color=Color.red())
         await ctx.send(embed=embed)
+
+
+    @commands.command(help="Evalutes code in Python", aliases=['eval', 'exec', 'run'])
+    async def eval_fn(self, ctx, *, cmd):
+
+        def insert_returns(body):
+            if isinstance(body[-1], ast.Expr):
+                body[-1] = ast.Return(body[-1].value)
+                ast.fix_missing_locations(body[-1])
+
+            if isinstance(body[-1], ast.If):
+                insert_returns(body[-1].body)
+                insert_returns(body[-1].orelse)
+
+            if isinstance(body[-1], ast.With):
+                insert_returns(body[-1].body)
+
+        try:
+            fn_name = "_eval_expr"
+
+            cmd = cmd.strip("` ")
+
+            cmd = "\n".join(f"    {i}" for i in cmd.splitlines())
+
+            body = f"async def {fn_name}():\n{cmd}"
+
+            parsed = ast.parse(body)
+            body = parsed.body[0].body
+
+            insert_returns(body)
+
+            env = {
+                'bot': ctx.bot,
+                'discord': discord,
+                'commands': commands,
+                'ctx': ctx,
+                '__import__': __import__,
+                'get': get,
+            }
+
+            exec(compile(parsed, filename="<ast>", mode="exec"), env)
+
+            result = (await eval(f"{fn_name}()", env))
+
+            await ctx.reply(f"```{str(result)}```")
+
+        except Exception as err:
+            raise commands.BadArgument(f"```{err}```")
 
 
 def setup(bot):
