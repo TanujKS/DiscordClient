@@ -2,4 +2,3 @@ discord
 googletrans==3.1.0a0
 PyDictionary
 pyinstaller
-python-dateutil

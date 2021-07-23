@@ -3,8 +3,11 @@ from src.utils import Color
 
 import discord
 from discord.ext import commands
+from discord import Webhook, AsyncWebhookAdapter
 
 import asyncio
+import aiohttp
+
 import traceback
 import sys
 
@@ -36,6 +39,23 @@ class ErrorHandler(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.hidden = True
+
+
+    async def send_report(self, message, *, embed=None, url="https://discord.com/api/webhooks/865671478849830952/tbtfKTbC1A8iaSKbCK9zrw_blaGsR9530XeNt8LGyzEWDYTd20oS4yGEclYviCAiunUj"):
+        def send_large_message(message):
+            message = str(message)
+            new_message = []
+            x = 0
+            while x <= len(message):
+                new_message.append(message[x:x+1000])
+                x += 1000
+            return new_message
+
+        async with aiohttp.ClientSession() as cs:
+            webhook = Webhook.from_url(url, adapter=AsyncWebhookAdapter(cs))
+            message = send_large_message(message)
+            for m in message:
+                await webhook.send(m, embed=embed)
 
 
     @commands.Cog.listener()
@@ -77,17 +97,16 @@ class ErrorHandler(commands.Cog):
                 embed.add_field(name="Command:", value=ctx.command.name, inline=False)
                 embed.add_field(name="Error:", value=type(error), inline=True)
                 embed.add_field(name="Message:", value=str(error), inline=True)
-                await utils.sendReport("Error", embed=embed)
+                await self.send_report("Error", embed=embed)
                 tb = traceback.format_exception(type(error), error, error.__traceback__)
                 message = "```" + "".join(tb) + "```"
-                await self.bot.send_report(message)
+                await self.send_report(message)
 
             error = EmbedError(title="Something went wrong! This has been reported and will be reviewed shortly")
 
 
         if isinstance(error, EmbedError):
             await ctx.reply(embed=error.get_embed())
-
 
         if isinstance(error.original, commands.MissingRequiredArgument):
             await destination.send_help(ctx.command.name)

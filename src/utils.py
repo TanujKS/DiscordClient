@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 from datetime import datetime
-from dateutil import tz
+import pytz
 
 import json
 import os
@@ -39,7 +39,7 @@ class Config:
     @staticmethod
     def config_exists(*, path="config.json"):
         try:
-            open(path)
+            with open(path): pass
             return True
         except FileNotFoundError:
             return False
@@ -51,11 +51,6 @@ class Color(discord.Color):
         return cls(0xff0000)
 
 
-class Converters:
-    RoleConverter = commands.RoleConverter()
-    MemberConverter = commands.MemberConverter()
-
-
 def checkIfNone(value, default):
     if value:
         return value
@@ -64,8 +59,8 @@ def checkIfNone(value, default):
 
 
 def UTCtoPST(utc_time):
-    utc = tz.gettz('UTC')
-    new_zone = tz.gettz("America/Los_Angeles")
+    utc = pytz.timezone('UTC')
+    new_zone = pytz.timezone("America/Los_Angeles")
 
     utc_time = utc_time.replace(tzinfo=utc)
 

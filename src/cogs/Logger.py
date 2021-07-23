@@ -139,33 +139,40 @@ class Logger(commands.Cog):
 
     @commands.command(help="Logs deleted and edited messages in a server")
     @commands.guild_only()
-    async def logserver(self, ctx):
-        if ctx.guild.id in self.bot.config.logged_guilds:
-            raise commands.BadArgument(f"Already logging {ctx.guild.name}")
-        self.bot.config.logged_guilds.append(ctx.guild.id)
+    async def logserver(self, ctx, *, guild : discord.Guild=None):
+        if not guild:
+            guild = ctx.guild
+
+        if guild.id in self.bot.config.logged_guilds:
+            raise commands.BadArgument(f"Already logging {guild.name}")
+
+        self.bot.config.logged_guilds.append(guild.id)
         self.bot.config.logged_guilds = self.bot.config.logged_guilds
-        embed = discord.Embed(title=f"You are now logging {ctx.guild.name}", description="All deleted and edited messages will be sent to your logging channel", color=Color.red())
+
+        embed = discord.Embed(title=f"You are now logging {guild.name}", description="All deleted and edited messages will be sent to your logging channel", color=Color.red())
         await ctx.reply(embed=embed)
 
 
     @commands.command(help="Stops logging deleted and edited messages in a server")
     @commands.guild_only()
-    async def unlogserver(self, ctx):
-        if not ctx.guild.id in self.bot.config.logged_guilds:
-            raise commands.BadArgument(f"You are not logging {ctx.guild.name}")
-        self.bot.config.logged_guilds.remove(ctx.guild.id)
+    async def unlogserver(self, ctx, *, guild : discord.Guild=None):
+        if not guild:
+            guild = ctx.guild
+
+        if not guild.id in self.bot.config.logged_guilds:
+            raise commands.BadArgument(f"You are not logging {guild.name}")
+
+        self.bot.config.logged_guilds.remove(guild.id)
         self.bot.config.logged_guilds = self.bot.config.logged_guilds
-        embed = disord.Embed(title=f"You are no longer logging {ctx.guild.name}", description="Deleted and edited messages will no longer be sent to your logging channel", color=Color.red())
+
+        embed = discord.Embed(title=f"You are no longer logging {guild.name}", description="Deleted and edited messages will no longer be sent to your logging channel", color=Color.red())
         await ctx.reply(embed=embed)
 
 
     @commands.command(help="Displays a list of all servers being logged")
     async def loggedservers(self, ctx):
-        message = ""
-        guilds = [self.bot.get_guild(id) for id in self.bot.config.logged_guilds if self.bot.get_guild(id)]
-        for guild in guilds:
-            message += "\n"
-            message += guild.name
+        guilds = [self.bot.get_guild(id).name for id in self.bot.config.logged_guilds if self.bot.get_guild(id)]
+        message = "\n".join(guilds)
         await ctx.reply(f"```Servers currently being logged: {message}```")
 
 
@@ -191,11 +198,8 @@ class Logger(commands.Cog):
 
     @commands.command(help="Displays a list of all users being ignored")
     async def ignoredusers(self, ctx):
-        message = ""
-        for id in self.bot.config.ignored_users:
-            user = self.bot.get_user(id)
-            if user:
-                message += f"\n{str(user)}"
+        users = [str(self.bot.get_user(id)) for id in self.bot.config.ignored_users if self.bot.get_user(id)]
+        message = "\n".join(users)
         await ctx.send(f"```Users currently being ignored: {message}```")
 
 

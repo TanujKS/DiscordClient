@@ -4,10 +4,7 @@ from discord.ext import commands
 import src.utils as utils
 from src.utils import Color, Config
 
-from src.cogs.Setup import Setup
-from src.cogs.Misc import Misc
-from src.cogs.Logger import Logger
-from src.cogs.ErrorHandler import ErrorHandler
+from src.cogs import cogs_dict as cogs
 
 
 class Bot(commands.Bot):
@@ -21,12 +18,12 @@ class Bot(commands.Bot):
             bot.config = Config()
 
         if not bot.config.cogs:
-            bot.add_cog(Setup(bot))
+            bot.add_cog(cogs["Setup"](bot))
         else:
-            bot.add_cog(ErrorHandler(bot))
+            bot.add_cog(cogs["ErrorHandler"](bot))
 
             for cog in bot.config.cogs:
-                bot.add_cog(globals()[cog](bot))
+                bot.add_cog(cogs[cog](bot))
 
         bot.add_command(bot.setup)
 
@@ -66,7 +63,8 @@ class Bot(commands.Bot):
 
 
     def remove_all_cogs(bot):
-        for cog in bot.cogs:
+        cogs = [cog for cog in bot.cogs]
+        for cog in cogs:
             bot.remove_cog(cog)
 
 

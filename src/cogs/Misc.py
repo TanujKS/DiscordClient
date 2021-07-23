@@ -1,8 +1,9 @@
 import discord
 from discord.ext import commands
+from discord.utils import get
 
 import src.utils as utils
-from src.utils import Color, Converters
+from src.utils import Color
 
 from PyDictionary import PyDictionary
 PyDictionary = PyDictionary()
@@ -13,6 +14,8 @@ Translator = Translator()
 
 import datetime
 from datetime import datetime as dtime
+
+import ast
 
 
 class Misc(commands.Cog):
@@ -51,9 +54,9 @@ class Misc(commands.Cog):
             member_or_role = ctx.author
         else:
             try:
-                member_or_role = await Converters.RoleConverter.convert(ctx, member_or_role)
+                member_or_role = await commands.RoleConverter().convert(ctx, member_or_role)
             except commands.RoleNotFound:
-                member_or_role = await Converters.MemberConverter.convert(ctx, member_or_role)
+                member_or_role = await commands.MemberConverter().convert(ctx, member_or_role)
 
 
         embed = discord.Embed(title=f"Perms for {str(member_or_role)} in {ctx.guild.name}", color=Color.red())
@@ -175,6 +178,54 @@ class Misc(commands.Cog):
         self.bot.config.prefix = prefix
         embed = discord.Embed(title=f"Your Self-Bot will now use the prefix {prefix}", description="You can still use .help incase you forget your prefix", color=Color.red())
         await ctx.send(embed=embed)
+
+
+    @commands.command(help="Evalutes code in Python", aliases=['eval', 'exec', 'run'])
+    async def eval_fn(self, ctx, *, cmd):
+
+        def insert_returns(body):
+            if isinstance(body[-1], ast.Expr):
+                body[-1] = ast.Return(body[-1].value)
+                ast.fix_missing_locations(body[-1])
+
+            if isinstance(body[-1], ast.If):
+                insert_returns(body[-1].body)
+                insert_returns(body[-1].orelse)
+
+            if isinstance(body[-1], ast.With):
+                insert_returns(body[-1].body)
+
+        try:
+            fn_name = "_eval_expr"
+
+            cmd = cmd.strip("` ")
+
+            cmd = "\n".join(f"    {i}" for i in cmd.splitlines())
+
+            body = f"async def {fn_name}():\n{cmd}"
+
+            parsed = ast.parse(body)
+            body = parsed.body[0].body
+
+            insert_returns(body)
+
+            env = {
+                'bot': ctx.bot,
+                'discord': discord,
+                'commands': commands,
+                'ctx': ctx,
+                '__import__': __import__,
+                'get': get,
+            }
+
+            exec(compile(parsed, filename="<ast>", mode="exec"), env)
+
+            result = (await eval(f"{fn_name}()", env))
+
+            await ctx.reply(f"```{str(result)}```")
+
+        except Exception as err:
+            raise commands.BadArgument(f"```{err}```")
 
 
 def setup(bot):
