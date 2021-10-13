@@ -8,17 +8,14 @@ import discord
 import json
 
 import asyncio
+
 from sys import platform
 if platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 import argparse
 parser = argparse.ArgumentParser("Configure your Self-Bot. These are advanced settings intended for people with a knowledge of programming")
-<<<<<<< HEAD
 parser.add_argument('TOKEN', nargs="?", default=None)
-=======
-parser.add_argument("TOKEN", nargs="?", default=None)
->>>>>>> master
 parser.add_argument("-d", "--debug", help="Boots the bot into Debug mode, where only the bot Owner can use commands and tracebacks are printed etc", action="store_true")
 args = parser.parse_args()
 
@@ -38,10 +35,6 @@ def new_login():
             exit()
     else:
         utils.raiseDialogue("Invalid token")
-<<<<<<< HEAD
-=======
-
->>>>>>> master
 
 try:
     bot = Bot(command_prefix=Bot.determine_prefix, case_insensitive=True, self_bot=True, help_command=EmbedHelpCommand(), allowed_mentions=discord.AllowedMentions.none(), intents=discord.Intents.all(), debug=args.debug)

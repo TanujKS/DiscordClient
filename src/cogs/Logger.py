@@ -171,16 +171,13 @@ class Logger(commands.Cog):
 
     @commands.command(help="Displays a list of all servers being logged")
     async def loggedservers(self, ctx):
-<<<<<<< HEAD
         message = ""
         guilds = [self.bot.get_guild(id) for id in self.bot.config.logged_guilds if self.bot.get_guild(id)]
         for guild in guilds:
             message += "\n"
             message += guild.name
-=======
         guilds = [self.bot.get_guild(id).name for id in self.bot.config.logged_guilds if self.bot.get_guild(id)]
         message = "\n".join(guilds)
->>>>>>> master
         await ctx.reply(f"```Servers currently being logged: {message}```")
 
 

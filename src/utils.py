@@ -6,10 +6,7 @@ import pytz
 
 import json
 import os
-<<<<<<< HEAD
-=======
 
->>>>>>> master
 
 class Config:
     def __setattr__(self, name, value):

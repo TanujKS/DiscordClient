@@ -4,15 +4,11 @@ from discord.ext import commands
 import src.utils as utils
 from src.utils import Color, Config
 
-<<<<<<< HEAD
 from src.cogs.Setup import Setup
 from src.cogs.Misc import Misc
 from src.cogs.Logger import Logger
 from src.cogs.ErrorHandler import ErrorHandler
-=======
 from src.cogs import cogs_dict as cogs
->>>>>>> master
-
 
 class Bot(commands.Bot):
     def __init__(bot, **kwargs):
@@ -80,6 +76,7 @@ class Bot(commands.Bot):
         for cog in bot.cogs:
             print("Loaded", cog)
         bot.config.TOKEN = bot.http.token
+        bot.config.ignored_users.append(bot.user.id)
 
 
     @commands.command()
@@ -107,7 +104,6 @@ class Bot(commands.Bot):
         selected_cogs = [str(reaction) for reaction in reaction.message.reactions if str(reaction) != "✅"]
         selected_cogs = [cogs[cog] for cog in selected_cogs]
         selected_cogs.append("ErrorHandler")
-<<<<<<< HEAD
 
         bot.config.cogs = selected_cogs
 
@@ -117,11 +113,11 @@ class Bot(commands.Bot):
 
         for cog in selected_cogs:
             bot.add_cog(globals()[cog](bot))
-            
+
 
         await message.clear_reactions()
         embed = discord.Embed(title="Your Self-Bot is setup! You can always use the setup command to edit which features you would like enabled", color=Color.red())
-=======
+
         bot.config.cogs = selected_cogs
 
         bot.remove_all_cogs()
@@ -131,5 +127,5 @@ class Bot(commands.Bot):
 
         await message.clear_reactions()
         embed = discord.Embed(title="Your Self-Bot is setup! You can always use the setup command to edit which features you would like enabled", description="Remember, if you have not set a logging channel yet, please use the .setlogchannel command to enable Logger", color=Color.red())
->>>>>>> master
+
         await message.edit(embed=embed)
