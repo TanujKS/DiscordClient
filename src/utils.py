@@ -6,6 +6,7 @@ import pytz
 
 import json
 import os
+from sys import platform
 
 
 class Config:
@@ -70,5 +71,8 @@ def UTCtoPST(utc_time):
 
 
 def raiseDialogue(message):
-    command = f"osascript -e 'tell app " + f'"System Events" to display dialog "{message}"' + "'"
-    os.system(command)
+    if platform == "darwin":
+        command = f"osascript -e 'tell app " + f'"System Events" to display dialog "{message}"' + "'"
+        os.system(command)
+    else:
+        print(message)
