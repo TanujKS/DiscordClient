@@ -171,13 +171,8 @@ class Logger(commands.Cog):
 
     @commands.command(help="Displays a list of all servers being logged")
     async def loggedservers(self, ctx):
-        message = ""
-        guilds = [self.bot.get_guild(id) for id in self.bot.config.logged_guilds if self.bot.get_guild(id)]
-        for guild in guilds:
-            message += "\n"
-            message += guild.name
         guilds = [self.bot.get_guild(id).name for id in self.bot.config.logged_guilds if self.bot.get_guild(id)]
-        message = "\n".join(guilds)
+        message = "\n" + "\n".join(guilds)
         await ctx.reply(f"```Servers currently being logged: {message}```")
 
 
@@ -204,7 +199,7 @@ class Logger(commands.Cog):
     @commands.command(help="Displays a list of all users being ignored")
     async def ignoredusers(self, ctx):
         users = [str(self.bot.get_user(id)) for id in self.bot.config.ignored_users if self.bot.get_user(id)]
-        message = "\n".join(users)
+        message = "\n" + "\n".join(users)
         await ctx.send(f"```Users currently being ignored: {message}```")
 
 
