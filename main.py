@@ -9,10 +9,6 @@ import json
 
 import asyncio
 
-from sys import platform
-if platform == "win32":
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-
 import argparse
 parser = argparse.ArgumentParser("Configure your Self-Bot. These are advanced settings intended for people with a knowledge of programming")
 parser.add_argument('TOKEN', nargs="?", default=None)
