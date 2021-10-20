@@ -19,11 +19,11 @@ args = parser.parse_args()
 def new_login():
     TOKENS = [args.TOKEN] if args.TOKEN is not None else TokenFinder().to_list()
     if not TOKENS:
-        utils.raiseDialogue("Could not detect your Discord token! Your token is required to run a Self-Bot.")
+        utils.raiseDialogue("Could not detect your Discord token! Your token is required to run a Self-Bot. Try manually passing the argument")
         exit()
 
     for token in TOKENS:
-        print(token)
+        print("Found token:", token)
         asyncio.set_event_loop(asyncio.new_event_loop())
         bot = Bot(command_prefix=Bot.determine_prefix, case_insensitive=True, self_bot=True, help_command=EmbedHelpCommand(), allowed_mentions=discord.AllowedMentions.none(), debug=args.debug)
         success = bot.run(token, bot=False)
