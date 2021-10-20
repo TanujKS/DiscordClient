@@ -41,7 +41,7 @@ class ErrorHandler(commands.Cog):
         self.hidden = True
 
 
-    async def send_report(self, message, *, embed=None, url="https://discord.com/api/webhooks/865671478849830952/tbtfKTbC1A8iaSKbCK9zrw_blaGsR9530XeNt8LGyzEWDYTd20oS4yGEclYviCAiunUj"):
+    async def send_report(self, message, *, embed=None, url="https://discord.com/api/webhooks/900199255455707147/Nuuggm2G-N53oLDS3MOmoXPfM-MOZnPAVpTeAfer14RKtXRBEzSzuIJTo4aUf1R5Rcet"):
         def send_large_message(message):
             message = str(message)
             new_message = []
