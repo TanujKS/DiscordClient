@@ -168,11 +168,6 @@ class Misc(commands.Cog):
         await ctx.send(embed=embed)
 
 
-    @commands.command(help="Marks a server as read", aliases=['markasread', 'mar'])
-    async def ack(self, ctx):
-        await ctx.guild.ack()
-
-
     @commands.command(help="Changes the Self-Bot's prefix")
     async def changeprefix(self, ctx, prefix):
         self.bot.config.prefix = prefix

@@ -189,7 +189,7 @@ class Logger(commands.Cog):
     @commands.command(help="Starts logging a users deleted and edited messages")
     async def unignore(self, ctx, user : discord.User):
         if not user.id in self.bot.config.ignored_users:
-            return await ctx.send(f"```Already not ignoring {str(user)}```")
+            raise commands.BadArgument(f"Already logging {str(user)}")
         self.bot.config.ignored_users.remove(user.id)
         self.bot.config.ignored_users = self.bot.config.ignored_users
         embed = discord.Embed(title=f"You are no longer ignoring {str(user)}", description="All deleted and edited messages by this user will now be sent to your logging channel", color=Color.red())

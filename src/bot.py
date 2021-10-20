@@ -10,6 +10,7 @@ from src.cogs.Logger import Logger
 from src.cogs.ErrorHandler import ErrorHandler
 from src.cogs import cogs_dict as cogs
 
+
 class Bot(commands.Bot):
     def __init__(bot, **kwargs):
         super().__init__(**kwargs)
@@ -27,7 +28,7 @@ class Bot(commands.Bot):
                 bot.add_cog(cogs[cog](bot))
 
         bot.add_command(bot.setup)
-
+        bot.add_command(bot.shutdown)
 
     def run(self, *args, **kwargs):
         try:
@@ -76,7 +77,14 @@ class Bot(commands.Bot):
         bot.config.TOKEN = bot.http.token
 
 
-    @commands.command()
+    @commands.command(help="Shuts down your Self-Bot")
+    async def shutdown(ctx):
+        embed = discord.Embed(title="Shutting Down. Goodbye!", color=Color.red())
+        await ctx.reply(embed=embed)
+        await ctx.bot.close()
+
+
+    @commands.command(help="Sets up and initalizes your bot")
     async def setup(ctx):
         bot = ctx.bot
 
