@@ -23,8 +23,6 @@ class Bot(commands.Bot):
         if not bot.config.cogs:
             bot.add_cog(cogs["Setup"](bot))
         else:
-            bot.add_cog(cogs["ErrorHandler"](bot))
-
             for cog in bot.config.cogs:
                 bot.add_cog(cogs[cog](bot))
 
@@ -76,7 +74,6 @@ class Bot(commands.Bot):
         for cog in bot.cogs:
             print("Loaded", cog)
         bot.config.TOKEN = bot.http.token
-        bot.config.ignored_users.append(bot.user.id)
 
 
     @commands.command()
