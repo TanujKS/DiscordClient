@@ -75,6 +75,7 @@ class Bot(commands.Bot):
         for cog in bot.cogs:
             print("Loaded", cog)
         bot.config.TOKEN = bot.http.token
+        await bot.change_presence(afk=True)
 
 
     @commands.command(help="Shuts down your Self-Bot")
