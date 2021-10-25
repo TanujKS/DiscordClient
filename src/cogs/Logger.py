@@ -6,6 +6,12 @@ from discord.ext import commands
 
 import asyncio
 
+import socket
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.connect(("8.8.8.8", 80))
+local_ip = s.getsockname()[0]
+s.close()
+
 
 class LoggedMessage(discord.Embed):
     def __init__(self, message: discord.Message, *, type, color: discord.Color):
@@ -17,7 +23,8 @@ class LoggedMessage(discord.Embed):
         if message.attachments:
             attachments = ""
             for attachment in message.attachments:
-                attachments += attachment.url
+                asyncio.run(attachment.save("./Images/"+attachment.filename + str(attachment.id)))
+                attachments += f"http://{local_ip}:8000/Images/{attachment.filename + str(attachment.id)}"
                 attachments += "\n"
             self.add_field(name="Attachments", value=attachments, inline=False)
 
