@@ -8,7 +8,6 @@ import discord
 import json
 
 import asyncio
-asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 import argparse
 parser = argparse.ArgumentParser("Configure your Self-Bot. These are advanced settings intended for people with a knowledge of programming")
