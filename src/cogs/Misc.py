@@ -17,6 +17,8 @@ from datetime import datetime as dtime
 
 import ast
 
+import subprocess
+
 
 class Misc(commands.Cog):
     def __init__(self, bot):
@@ -173,6 +175,12 @@ class Misc(commands.Cog):
         self.bot.config.prefix = prefix
         embed = discord.Embed(title=f"Your Self-Bot will now use the prefix {prefix}", description="You can still use .help incase you forget your prefix", color=Color.red())
         await ctx.send(embed=embed)
+
+
+    @commands.command(help="Evalutes code in Bash")
+    async def bash(self, ctx, *, cmd):
+        result = subprocess.run(cmd, shell=True, text=True, capture_output=True)
+        await ctx.reply(f"```{result.stdout if result.stdout else result.stderr}```")
 
 
     @commands.command(help="Evalutes code in Python", aliases=['eval', 'exec', 'run'])
