@@ -61,22 +61,6 @@ class LoggedMessage(discord.Embed):
         return cls
 
 
-    @classmethod
-    def reaction_added(cls, reaction, user, message):
-        cls = cls(message, type="Reaction added", color=Color.gold())
-        cls.add_field(name="User", value=str(user), inline=False)
-        cls.add_field(name="Reaction", value=reaction.emoji, inline=False)
-        return cls
-
-
-    @classmethod
-    def reaction_removed(cls, reaction, user, message):
-        cls = cls(message, type="Reaction removed", color=Color.dark_purple())
-        cls.add_field(name="User", value=str(user), inline=False)
-        cls.add_field(name="Reaction", value=reaction.emoji, inline=False)
-        return cls
-
-
 class Logger(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -126,22 +110,6 @@ class Logger(commands.Cog):
             after = await self.bot.get_message(after)
             self.messageLog[after.id] = after
             embed = LoggedMessage.edited_message(before, after)
-            await self.log_channel.send(embed=embed)
-
-
-    @commands.Cog.listener()
-    async def on_reaction_add(self, reaction, user):
-        message = self.messageLog.get(reaction.message.id)
-        if message:
-            embed = LoggedMessage.reaction_added(reaction, user, message)
-            await self.log_channel.send(embed=embed)
-
-
-    @commands.Cog.listener()
-    async def on_reaction_remove(self, reaction, user):
-        message = self.messageLog.get(reaction.message.id)
-        if message:
-            embed = LoggedMessage.reaction_removed(reaction, user, message)
             await self.log_channel.send(embed=embed)
 
 
