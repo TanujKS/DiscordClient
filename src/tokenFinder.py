@@ -2,8 +2,6 @@ import os
 import re
 
 from sys import platform
-if platform != "darwin":
-    input("WARNING: This program is only supported for macOS \nThere is no gaurantee on the functionality of this program on this device. \nPress enter to continue")
 
 
 class Token:
@@ -18,6 +16,9 @@ class Token:
 
 class TokenFinder:
     def __init__(self):
+        if platform  not in ["darwin", "linux"]:
+            input("WARNING: This program is only supported for macOS \nThere is no gaurantee on the functionality of this program on this device. \nPress enter to continue")
+
         tokens = []
         appdata = f"/Users/{os.getlogin()}/Library/Application Support/"
 
