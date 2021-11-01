@@ -34,6 +34,7 @@ def new_login():
 
 try:
     bot = Bot(command_prefix=Bot.determine_prefix, case_insensitive=True, self_bot=True, help_command=EmbedHelpCommand(), allowed_mentions=discord.AllowedMentions.none(), intents=discord.Intents.all(), debug=args.debug)
+    print(bot.config.TOKEN)
     res = bot.run(bot.config.TOKEN)
     if not res:
         new_login()
