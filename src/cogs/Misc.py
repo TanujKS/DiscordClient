@@ -19,12 +19,15 @@ import ast
 
 import subprocess
 
+from src.cogs.Info import Info
+
 
 class Misc(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.stopWatches = {}
         self.bot.help_command.cog = self
+        bot.add_cog(Info(bot))
 
 
     @commands.command(help="Spams a message")

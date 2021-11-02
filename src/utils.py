@@ -76,3 +76,7 @@ def raiseDialogue(message):
         os.system(command)
     else:
         print(message)
+
+
+def insert_commas(num):
+    return "{:,}".format(int(num))

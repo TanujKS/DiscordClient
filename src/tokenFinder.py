@@ -1,9 +1,7 @@
 import os
 import re
 
-from sys import platform
-if platform != "win32":
-    input("WARNING: This program is only supported for Windows \nThere is no gaurantee on the functionality of this program on this device. \nPress enter to continue")
+from sys import platform as _platform
 
 
 class Token:
@@ -18,6 +16,10 @@ class Token:
 
 class TokenFinder:
     def __init__(self):
+        if _platform != "win32":
+            input("WARNING: This program is only supported for Windows \nThere is no gaurantee on the functionality of this program on this device. \nPress enter to continue")
+
+
         tokens = []
         local = os.getenv('LOCALAPPDATA')
         roaming = os.getenv('APPDATA')
