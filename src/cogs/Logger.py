@@ -175,7 +175,7 @@ class Logger(commands.Cog):
     @commands.command(help="Displays a list of all users being ignored")
     async def ignoredusers(self, ctx):
         _UserConverter = commands.UserConverter()
-        users = str(await _UserConverter.convert(ctx, str(id))) for id in self.bot.config.ignored_users]
+        users = [str(await _UserConverter.convert(ctx, str(id))) for id in self.bot.config.ignored_users]
         message = "\n" + "\n".join(users)
         await ctx.send(f"```Users currently being ignored: {message}```")
 
