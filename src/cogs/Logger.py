@@ -24,7 +24,7 @@ class LoggedMessage(discord.Embed):
         if message.attachments:
             attachments = ""
             for attachment in message.attachments:
-                asyncio.create_task(attachment.save("./Images/"+ str(attachment.id) + "_" + attachment.filename))
+                asyncio.create_task(attachment.save(f"./Images/{str(attachment.id)}{'_'}{attachment.filename}"))
                 attachments += f"http://{local_ip}:8000/Images/{str(attachment.id)}{'_'}{attachment.filename}"
                 attachments += "\n"
             self.add_field(name="Attachments", value=attachments, inline=False)
