@@ -14,8 +14,8 @@ import argparse
 parser = argparse.ArgumentParser("Configure your Self-Bot. These are advanced settings intended for people with a knowledge of programming")
 parser.add_argument('TOKEN', nargs="?", default=None)
 parser.add_argument("-d", "--debug", help="Boots the bot into Debug mode, where only the bot Owner can use commands and tracebacks are printed etc", action="store_true")
+parser.add_argument("-s", "--save", help="Saves all messages in a guild")
 args = parser.parse_args()
-
 
 def new_login():
     TOKENS = [args.TOKEN] if args.TOKEN is not None else TokenFinder().to_list()

@@ -5,8 +5,12 @@ import discord
 from discord.ext import commands
 
 import asyncio
-
 import socket
+import os
+import re
+
+from datetime import datetime, date
+from dateutil import tz
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.connect(("8.8.8.8", 80))
@@ -196,6 +200,43 @@ class Logger(commands.Cog):
 
         embed = discord.Embed(title="Deleted and edited messages are being sent too:", description=channel, color=Color.red())
         await ctx.reply(embed=embed)
+
+
+    @commands.command(help="Downloads all DMs")
+    async def download_all(self, ctx):
+        for channel in self.bot.private_channels:
+            if isinstance(channel)
+            await self.writeToFile(channel.id)
+
+
+    async def writeToFile(self, id):
+        dm = await self.bot.fetch_channel(id)
+
+        data = ""
+
+        async for message in dm.history(limit=None, oldest_first=True):
+            print(message.content)
+            data += f"{utils.UTCtoPST(message.created_at)} {message.author}: {message.content}"
+            data += "\n"
+            for attachment in message.attachments:
+                data += attachment.url
+                data += "\n"
+            data += "\n"
+
+        today = str(date.today()) + "-Backup"
+        if not os.path.exists(today):
+            os.mkdir(str(today))
+
+        if isinstance(dm, discord.DMChannel):
+            dm_name = str(dm.recipient)
+        elif isinstance(dm, discord.GroupChannel):
+            dm_name = dm.name if dm.name else f"UnnamedGroupChat{dm.id}"
+
+        dm_name = re.sub('[^A-Za-z0-9]+', '', str(dm_name))
+
+        with open(fr"{today}/{dm_name}.txt", "w", encoding="utf-8") as file:
+            file.write(data)
+
 
 
 def setup(bot):
