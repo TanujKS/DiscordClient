@@ -205,7 +205,6 @@ class Logger(commands.Cog):
     @commands.command(help="Downloads all DMs")
     async def download_all(self, ctx):
         for channel in self.bot.private_channels:
-            if isinstance(channel)
             await self.writeToFile(channel.id)
 
 
@@ -215,7 +214,6 @@ class Logger(commands.Cog):
         data = ""
 
         async for message in dm.history(limit=None, oldest_first=True):
-            print(message.content)
             data += f"{utils.UTCtoPST(message.created_at)} {message.author}: {message.content}"
             data += "\n"
             for attachment in message.attachments:
@@ -225,7 +223,7 @@ class Logger(commands.Cog):
 
         today = str(date.today()) + "-Backup"
         if not os.path.exists(today):
-            os.mkdir(str(today))
+            os.mkdir(today)
 
         if isinstance(dm, discord.DMChannel):
             dm_name = str(dm.recipient)
@@ -234,6 +232,8 @@ class Logger(commands.Cog):
 
         dm_name = re.sub('[^A-Za-z0-9]+', '', str(dm_name))
 
+        print("Downloading", dm_name)
+        
         with open(fr"{today}/{dm_name}.txt", "w", encoding="utf-8") as file:
             file.write(data)
 
