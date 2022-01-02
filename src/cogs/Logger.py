@@ -206,6 +206,7 @@ class Logger(commands.Cog):
     async def download_all(self, ctx):
         for channel in self.bot.private_channels:
             await self.writeToFile(channel.id)
+        print("Downloaded all private channels")
 
 
     async def writeToFile(self, id):
@@ -233,7 +234,7 @@ class Logger(commands.Cog):
         dm_name = re.sub('[^A-Za-z0-9]+', '', str(dm_name))
 
         print("Downloading", dm_name)
-        
+
         with open(fr"{today}/{dm_name}.txt", "w", encoding="utf-8") as file:
             file.write(data)
 
